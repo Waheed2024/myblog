@@ -302,4 +302,9 @@ app.get('/api/admin/test-auth', (req, res) => {
 // Serve static files last so API routes are checked first
 app.use(express.static(path.join(__dirname)));
 
+// Serve blog.html as the main page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'blog.html'));
+});
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

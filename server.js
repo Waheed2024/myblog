@@ -307,4 +307,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'blog.html'));
 });
 
+// Force redeploy trigger
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

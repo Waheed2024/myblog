@@ -301,7 +301,7 @@ app.get('/api/admin/test-auth', (req, res) => {
 
 // Serve blog.html as the main page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'blog.html'));
+  res.redirect('/blog.html');
 });
 
 // Serve static files last so API routes are checked first

@@ -309,4 +309,4 @@ app.use(express.static(path.join(__dirname)));
 
 // Force redeploy trigger
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT} - Version 2`));

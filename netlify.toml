@@ -1,0 +1,6 @@
+[build]
+  publish = "."
+  command = "echo 'Static files ready for deployment'"
+
+[build.environment]
+  NODE_VERSION = "18"

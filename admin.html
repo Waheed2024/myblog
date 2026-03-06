@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Publish - my blog</title>
+  <link rel="stylesheet" href="blog.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="brand"><a href="/blog.html" class="brand-link">Cipher</a></div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="blog-container">
+      <h1>Admin — Publish & Manage Posts</h1>
+      <div class="new-post">
+        <form id="admin-post-form">
+          <input type="hidden" id="editing-id" value="">
+          <label>Title<br><input type="text" id="post-title" required></label>
+          <label>Excerpt<br><input type="text" id="post-excerpt"></label>
+          <label>Body<br><textarea id="post-body" rows="8" required></textarea></label>
+          <label>Publish password<br><input type="password" id="post-password" required placeholder="enter publish password"></label>
+          <div style="margin-top:.5rem">
+            <button type="submit" id="publish-btn">Publish</button>
+            <button type="button" id="cancel-edit" style="display:none">Cancel</button>
+          </div>
+        </form>
+        <p id="status" class="muted"></p>
+      </div>
+
+      <section class="admin-posts">
+        <h2>Existing posts</h2>
+        <div id="admin-posts-list" class="posts-list muted">Loading…</div>
+      </section>
+      <section class="admin-archive">
+        <h2>Archived posts</h2>
+        <div id="admin-archive-list" class="posts-list muted">Loading…</div>
+      </section>
+
+      <section class="admin-logs">
+        <h2>Activity logs</h2>
+        <div id="admin-logs-list" class="posts-list muted">Loading…</div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('admin-post-form');
+      const status = document.getElementById('status');
+      const postsList = document.getElementById('admin-posts-list');
+      const publishBtn = document.getElementById('publish-btn');
+      const cancelBtn = document.getElementById('cancel-edit');
+      const editingIdInput = document.getElementById('editing-id');
+
+      function setStatus(msg, err){ status.textContent = msg; status.style.color = err ? '#f88' : '#cfc'; }
+
+      async function loadPosts(){
+        try{
+          const res = await fetch('/api/posts');
+          const posts = await res.json();
+          if (!posts.length) return postsList.innerHTML = '<p>No posts yet.</p>';
+          postsList.innerHTML = posts.map(p => {
+            return `<div class="admin-post-item" data-id="${p.id}">
+              <strong>${p.title}</strong> <small>${new Date(p.date).toLocaleString()}</small>
+              <div class="admin-actions">
+                <button class="edit-post">Edit</button>
+                <button class="delete-post">Delete</button>
+              </div>
+            </div>`;
+          }).join('\n');
+
+          // attach handlers
+          postsList.querySelectorAll('.edit-post').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const id = btn.closest('.admin-post-item').dataset.id;
+              const post = posts.find(p => String(p.id) === String(id));
+              if (!post) return;
+              document.getElementById('post-title').value = post.title || '';
+              document.getElementById('post-excerpt').value = post.excerpt || '';
+              document.getElementById('post-body').value = post.body || '';
+              editingIdInput.value = post.id;
+              publishBtn.textContent = 'Save';
+              cancelBtn.style.display = 'inline-block';
+            });
+          });
+
+          postsList.querySelectorAll('.delete-post').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              const id = btn.closest('.admin-post-item').dataset.id;
+              if (!confirm('Delete this post?')) return;
+              const password = document.getElementById('post-password').value || '';
+              try{
+                const res = await fetch('/api/posts/'+id, { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({password}) });
+                if (!res.ok){ const err = await res.json().catch(()=>({})); alert('Delete failed: '+(err.error||res.status)); return; }
+                setStatus('Deleted', false);
+                await loadPosts();
+                // refresh archive view
+                await loadArchive();
+              }catch(e){ alert('Network error deleting'); }
+            });
+          });
+        }catch(e){ postsList.innerHTML = '<p class="muted">Could not load posts.</p>'; }
+      }
+
+      async function loadArchive(){
+        try{
+          const password = document.getElementById('post-password').value || '';
+          const res = await fetch('/api/archive', { headers: {'Authorization': 'Bearer ' + (password || '') } });
+          if (!res.ok) return document.getElementById('admin-archive-list').innerHTML = '<p class="muted">No archive or unauthorized</p>';
+          const archived = await res.json();
+          const el = document.getElementById('admin-archive-list');
+          if (!archived.length) return el.innerHTML = '<p>No archived posts</p>';
+          el.innerHTML = archived.map(p => `<div class="admin-post-item" data-id="${p.id}"><strong>${p.title}</strong> <small>${new Date(p.date).toLocaleString()}</small><div class="admin-actions"><button class="restore-post">Restore</button></div></div>`).join('\n');
+          el.querySelectorAll('.restore-post').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const id = btn.closest('.admin-post-item').dataset.id;
+              if (!confirm('Restore this archived post?')) return;
+              const password = document.getElementById('post-password').value || '';
+              try{
+                const res = await fetch('/api/archive/'+id+'/restore', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({password}) });
+                if (!res.ok){ const err = await res.json().catch(()=>({})); alert('Restore failed: '+(err.error||res.status)); return; }
+                setStatus('Restored', false);
+                await loadPosts();
+                await loadArchive();
+              }catch(e){ alert('Network error restoring'); }
+            });
+          });
+        }catch(e){ document.getElementById('admin-archive-list').innerHTML = '<p class="muted">Could not load archive</p>'; }
+      }
+
+      async function loadLogs(){
+        try{
+          const password = document.getElementById('post-password').value || '';
+          const res = await fetch('/api/admin/logs', { headers: {'Authorization': 'Bearer ' + (password || '') } });
+          if (!res.ok) return document.getElementById('admin-logs-list').innerHTML = '<p class="muted">No logs or unauthorized</p>';
+          const logs = await res.json();
+          const el = document.getElementById('admin-logs-list');
+          if (!logs.length) return el.innerHTML = '<p>No activity yet</p>';
+          el.innerHTML = logs.map(l => `<div class="admin-log-item"><small>${l.time}</small> <strong>${l.action}</strong> ${l.title?(' - '+l.title):''} ${l.id?('(id:'+l.id+')'):''}}</div>`).join('\n');
+        }catch(e){ document.getElementById('admin-logs-list').innerHTML = '<p class="muted">Could not load logs</p>'; }
+      }
+
+      cancelBtn.addEventListener('click', ()=>{
+        form.reset(); editingIdInput.value=''; publishBtn.textContent='Publish'; cancelBtn.style.display='none'; setStatus('Edit cancelled');
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        setStatus('Processing...');
+        const title = document.getElementById('post-title').value.trim();
+        const excerpt = document.getElementById('post-excerpt').value.trim();
+        const body = document.getElementById('post-body').value.trim();
+        const password = document.getElementById('post-password').value || '';
+        const editingId = editingIdInput.value;
+        if (!title || !body) { setStatus('Title and body required', true); return; }
+        try{
+          let res;
+          if (editingId){
+            res = await fetch('/api/posts/'+editingId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title, excerpt, body, password}) });
+            if (!res.ok){ const err = await res.json().catch(()=>({})); setStatus('Save failed: '+(err.error||res.status), true); return; }
+            setStatus('Saved', false);
+            form.reset(); editingIdInput.value=''; publishBtn.textContent='Publish'; cancelBtn.style.display='none';
+          } else {
+            res = await fetch('/api/posts', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title, excerpt, body, password}) });
+            if (!res.ok){ const err = await res.json().catch(()=>({})); setStatus('Publish failed: '+(err.error||res.status), true); return; }
+            setStatus('Published', false);
+            form.reset();
+          }
+          await loadPosts();
+          await loadArchive();
+          await loadLogs();
+        }catch(e){ setStatus('Network error', true); }
+      });
+
+      // reload archive/logs when password changes
+      const passwordInput = document.getElementById('post-password');
+      if (passwordInput){
+        passwordInput.addEventListener('input', () => {
+          loadArchive();
+          loadLogs();
+        });
+      }
+
+      // initial load
+      loadPosts();
+      // also attempt archive/logs load so panels don't stay "Loading…"
+      loadArchive();
+      loadLogs();
+    })();
+  </script>
+</body>
+</html>

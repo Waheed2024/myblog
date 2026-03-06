@@ -290,6 +290,15 @@ app.post('/api/contact', (req, res) => {
   return res.status(200).json({success: true, message: 'Message received successfully'});
 });
 
+// Test authentication endpoint for admin login
+app.get('/api/admin/test-auth', (req, res) => {
+  if (isAdminAuthorized({}, req.get('Authorization'))) {
+    return res.status(200).json({authenticated: true});
+  } else {
+    return res.status(401).json({error: 'Invalid credentials'});
+  }
+});
+
 // Serve static files last so API routes are checked first
 app.use(express.static(path.join(__dirname)));
 

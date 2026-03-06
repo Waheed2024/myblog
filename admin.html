@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Publish - my blog</title>
+  <title>Admin Login - My Blog</title>
   <link rel="stylesheet" href="blog.css">
 </head>
 <body>
@@ -15,40 +15,132 @@
 
   <main>
     <div class="blog-container">
-      <h1>Admin — Publish & Manage Posts</h1>
-      <div class="new-post">
-        <form id="admin-post-form">
-          <input type="hidden" id="editing-id" value="">
-          <label>Title<br><input type="text" id="post-title" required></label>
-          <label>Excerpt<br><input type="text" id="post-excerpt"></label>
-          <label>Body<br><textarea id="post-body" rows="8" required></textarea></label>
-          <label>Publish password<br><input type="password" id="post-password" required placeholder="enter publish password"></label>
+      <!-- Login Form -->
+      <div id="login-section">
+        <h1>Admin Login Required</h1>
+        <p class="muted">Please enter your admin password to access the management panel.</p>
+        <form id="login-form">
+          <label>Admin Password<br><input type="password" id="admin-password" required placeholder="Enter admin password"></label>
           <div style="margin-top:.5rem">
-            <button type="submit" id="publish-btn">Publish</button>
-            <button type="button" id="cancel-edit" style="display:none">Cancel</button>
+            <button type="submit">Login</button>
           </div>
         </form>
-        <p id="status" class="muted"></p>
+        <p id="login-status" class="muted"></p>
       </div>
 
-      <section class="admin-posts">
-        <h2>Existing posts</h2>
-        <div id="admin-posts-list" class="posts-list muted">Loading…</div>
-      </section>
-      <section class="admin-archive">
-        <h2>Archived posts</h2>
-        <div id="admin-archive-list" class="posts-list muted">Loading…</div>
-      </section>
+      <!-- Admin Panel (hidden until login) -->
+      <div id="admin-panel" style="display:none;">
+        <h1>Admin — Publish & Manage Posts</h1>
+        <div class="new-post">
+          <form id="admin-post-form">
+            <input type="hidden" id="editing-id" value="">
+            <label>Title<br><input type="text" id="post-title" required></label>
+            <label>Excerpt<br><input type="text" id="post-excerpt"></label>
+            <label>Body<br><textarea id="post-body" rows="8" required></textarea></label>
+            <div style="margin-top:.5rem">
+              <button type="submit" id="publish-btn">Publish</button>
+              <button type="button" id="cancel-edit" style="display:none">Cancel</button>
+            </div>
+          </form>
+          <p id="status" class="muted"></p>
+        </div>
 
-      <section class="admin-logs">
-        <h2>Activity logs</h2>
-        <div id="admin-logs-list" class="posts-list muted">Loading…</div>
-      </section>
+        <section class="admin-posts">
+          <h2>Existing posts</h2>
+          <div id="admin-posts-list" class="posts-list muted">Loading…</div>
+        </section>
+        <section class="admin-archive">
+          <h2>Archived posts</h2>
+          <div id="admin-archive-list" class="posts-list muted">Loading…</div>
+        </section>
+
+        <section class="admin-logs">
+          <h2>Activity logs</h2>
+          <div id="admin-logs-list" class="posts-list muted">Loading…</div>
+        </section>
+
+        <div style="margin-top:2rem; padding:1rem; background:#f0f0f0; border-radius:6px;">
+          <button id="logout-btn" style="background:#dc2626; color:white; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">Logout</button>
+        </div>
+      </div>
     </div>
   </main>
 
   <script>
     (function(){
+      const loginSection = document.getElementById('login-section');
+      const adminPanel = document.getElementById('admin-panel');
+      const loginForm = document.getElementById('login-form');
+      const loginStatus = document.getElementById('login-status');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      let authToken = localStorage.getItem('adminToken');
+
+      function showLogin(){
+        loginSection.style.display = 'block';
+        adminPanel.style.display = 'none';
+      }
+
+      function showAdmin(){
+        loginSection.style.display = 'none';
+        adminPanel.style.display = 'block';
+        loadPosts();
+        loadArchive();
+        loadLogs();
+      }
+
+      function setLoginStatus(msg, err){
+        loginStatus.textContent = msg;
+        loginStatus.style.color = err ? '#f88' : '#cfc';
+      }
+
+      // Check if already logged in
+      if (authToken) {
+        showAdmin();
+      } else {
+        showLogin();
+      }
+
+      // Login form handler
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('admin-password').value;
+
+        if (!password) {
+          setLoginStatus('Password required', true);
+          return;
+        }
+
+        setLoginStatus('Logging in...');
+
+        try {
+          const res = await fetch('/api/admin/test-auth', {
+            headers: {'Authorization': 'Bearer ' + password}
+          });
+
+          if (res.ok) {
+            authToken = password;
+            localStorage.setItem('adminToken', authToken);
+            setLoginStatus('Login successful!', false);
+            setTimeout(() => showAdmin(), 1000);
+          } else {
+            setLoginStatus('Invalid password', true);
+          }
+        } catch (e) {
+          setLoginStatus('Network error', true);
+        }
+      });
+
+      // Logout handler
+      logoutBtn.addEventListener('click', () => {
+        authToken = null;
+        localStorage.removeItem('adminToken');
+        showLogin();
+        loginForm.reset();
+        setLoginStatus('');
+      });
+
+      // Admin functionality
       const form = document.getElementById('admin-post-form');
       const status = document.getElementById('status');
       const postsList = document.getElementById('admin-posts-list');
@@ -56,9 +148,13 @@
       const cancelBtn = document.getElementById('cancel-edit');
       const editingIdInput = document.getElementById('editing-id');
 
-      function setStatus(msg, err){ status.textContent = msg; status.style.color = err ? '#f88' : '#cfc'; }
+      function setStatus(msg, err){
+        status.textContent = msg;
+        status.style.color = err ? '#f88' : '#cfc';
+      }
 
       async function loadPosts(){
+        if (!authToken) return;
         try{
           const res = await fetch('/api/posts');
           const posts = await res.json();
@@ -73,7 +169,6 @@
             </div>`;
           }).join('\n');
 
-          // attach handlers
           postsList.querySelectorAll('.edit-post').forEach(btn => {
             btn.addEventListener('click', (e) => {
               const id = btn.closest('.admin-post-item').dataset.id;
@@ -92,13 +187,21 @@
             btn.addEventListener('click', async (e) => {
               const id = btn.closest('.admin-post-item').dataset.id;
               if (!confirm('Delete this post?')) return;
-              const password = document.getElementById('post-password').value || '';
               try{
-                const res = await fetch('/api/posts/'+id, { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({password}) });
-                if (!res.ok){ const err = await res.json().catch(()=>({})); alert('Delete failed: '+(err.error||res.status)); return; }
+                const res = await fetch('/api/posts/'+id, {
+                  method:'DELETE',
+                  headers:{
+                    'Content-Type':'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                  }
+                });
+                if (!res.ok){
+                  const err = await res.json().catch(()=>({}));
+                  alert('Delete failed: '+(err.error||res.status));
+                  return;
+                }
                 setStatus('Deleted', false);
                 await loadPosts();
-                // refresh archive view
                 await loadArchive();
               }catch(e){ alert('Network error deleting'); }
             });
@@ -107,9 +210,11 @@
       }
 
       async function loadArchive(){
+        if (!authToken) return;
         try{
-          const password = document.getElementById('post-password').value || '';
-          const res = await fetch('/api/archive', { headers: {'Authorization': 'Bearer ' + (password || '') } });
+          const res = await fetch('/api/archive', {
+            headers: {'Authorization': 'Bearer ' + authToken}
+          });
           if (!res.ok) return document.getElementById('admin-archive-list').innerHTML = '<p class="muted">No archive or unauthorized</p>';
           const archived = await res.json();
           const el = document.getElementById('admin-archive-list');
@@ -119,10 +224,19 @@
             btn.addEventListener('click', async () => {
               const id = btn.closest('.admin-post-item').dataset.id;
               if (!confirm('Restore this archived post?')) return;
-              const password = document.getElementById('post-password').value || '';
               try{
-                const res = await fetch('/api/archive/'+id+'/restore', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({password}) });
-                if (!res.ok){ const err = await res.json().catch(()=>({})); alert('Restore failed: '+(err.error||res.status)); return; }
+                const res = await fetch('/api/archive/'+id+'/restore', {
+                  method:'POST',
+                  headers:{
+                    'Content-Type':'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                  }
+                });
+                if (!res.ok){
+                  const err = await res.json().catch(()=>({}));
+                  alert('Restore failed: '+(err.error||res.status));
+                  return;
+                }
                 setStatus('Restored', false);
                 await loadPosts();
                 await loadArchive();
@@ -133,40 +247,81 @@
       }
 
       async function loadLogs(){
+        if (!authToken) return;
         try{
-          const password = document.getElementById('post-password').value || '';
-          const res = await fetch('/api/admin/logs', { headers: {'Authorization': 'Bearer ' + (password || '') } });
+          const res = await fetch('/api/admin/logs', {
+            headers: {'Authorization': 'Bearer ' + authToken}
+          });
           if (!res.ok) return document.getElementById('admin-logs-list').innerHTML = '<p class="muted">No logs or unauthorized</p>';
           const logs = await res.json();
           const el = document.getElementById('admin-logs-list');
           if (!logs.length) return el.innerHTML = '<p>No activity yet</p>';
-          el.innerHTML = logs.map(l => `<div class="admin-log-item"><small>${l.time}</small> <strong>${l.action}</strong> ${l.title?(' - '+l.title):''} ${l.id?('(id:'+l.id+')'):''}}</div>`).join('\n');
+          el.innerHTML = logs.map(l => `<div class="admin-log-item"><small>${l.time}</small> <strong>${l.action}</strong> ${l.title?(' - '+l.title):''} ${l.id?('(id:'+l.id+')'):''}</div>`).join('\n');
         }catch(e){ document.getElementById('admin-logs-list').innerHTML = '<p class="muted">Could not load logs</p>'; }
       }
 
+      // Form handlers
       cancelBtn.addEventListener('click', ()=>{
-        form.reset(); editingIdInput.value=''; publishBtn.textContent='Publish'; cancelBtn.style.display='none'; setStatus('Edit cancelled');
+        form.reset();
+        editingIdInput.value='';
+        publishBtn.textContent='Publish';
+        cancelBtn.style.display='none';
+        setStatus('Edit cancelled');
       });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!authToken) {
+          setStatus('Not authenticated', true);
+          return;
+        }
+
         setStatus('Processing...');
         const title = document.getElementById('post-title').value.trim();
         const excerpt = document.getElementById('post-excerpt').value.trim();
         const body = document.getElementById('post-body').value.trim();
-        const password = document.getElementById('post-password').value || '';
         const editingId = editingIdInput.value;
-        if (!title || !body) { setStatus('Title and body required', true); return; }
+
+        if (!title || !body) {
+          setStatus('Title and body required', true);
+          return;
+        }
+
         try{
           let res;
           if (editingId){
-            res = await fetch('/api/posts/'+editingId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title, excerpt, body, password}) });
-            if (!res.ok){ const err = await res.json().catch(()=>({})); setStatus('Save failed: '+(err.error||res.status), true); return; }
+            res = await fetch('/api/posts/'+editingId, {
+              method:'PUT',
+              headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer ' + authToken
+              },
+              body: JSON.stringify({title, excerpt, body})
+            });
+            if (!res.ok){
+              const err = await res.json().catch(()=>({}));
+              setStatus('Save failed: '+(err.error||res.status), true);
+              return;
+            }
             setStatus('Saved', false);
-            form.reset(); editingIdInput.value=''; publishBtn.textContent='Publish'; cancelBtn.style.display='none';
+            form.reset();
+            editingIdInput.value='';
+            publishBtn.textContent='Publish';
+            cancelBtn.style.display='none';
           } else {
-            res = await fetch('/api/posts', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title, excerpt, body, password}) });
-            if (!res.ok){ const err = await res.json().catch(()=>({})); setStatus('Publish failed: '+(err.error||res.status), true); return; }
+            res = await fetch('/api/posts', {
+              method:'POST',
+              headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer ' + authToken
+              },
+              body: JSON.stringify({title, excerpt, body})
+            });
+            if (!res.ok){
+              const err = await res.json().catch(()=>({}));
+              setStatus('Publish failed: '+(err.error||res.status), true);
+              return;
+            }
             setStatus('Published', false);
             form.reset();
           }
@@ -175,21 +330,6 @@
           await loadLogs();
         }catch(e){ setStatus('Network error', true); }
       });
-
-      // reload archive/logs when password changes
-      const passwordInput = document.getElementById('post-password');
-      if (passwordInput){
-        passwordInput.addEventListener('input', () => {
-          loadArchive();
-          loadLogs();
-        });
-      }
-
-      // initial load
-      loadPosts();
-      // also attempt archive/logs load so panels don't stay "Loading…"
-      loadArchive();
-      loadLogs();
     })();
   </script>
 </body>

@@ -299,13 +299,13 @@ app.get('/api/admin/test-auth', (req, res) => {
   }
 });
 
-// Serve static files last so API routes are checked first
-app.use(express.static(path.join(__dirname)));
-
 // Serve blog.html as the main page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'blog.html'));
 });
+
+// Serve static files last so API routes are checked first
+app.use(express.static(path.join(__dirname)));
 
 // Force redeploy trigger
 

@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.env
+.env.local
+.env.production
+.DS_Store
+Thumbs.db
+messages.json
+actions-log.json
+posts-archive.json

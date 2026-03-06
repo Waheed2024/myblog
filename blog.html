@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>my blog</title>
+    <link rel="stylesheet" href="blog.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="brand">
+                <a href="#home" class="brand-link">Cipher</a>
+            </div>
+
+            <button class="nav-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Menu">☰</button>
+
+            <div class="nav-links" id="primary-navigation">
+                <a href="#home" class="nav-link" data-target="home">Home</a>
+                <a href="#blog" class="nav-link" data-target="blog">Blog</a>
+                <a href="#about" class="nav-link" data-target="about">About</a>
+                <a href="#contact" class="nav-link" data-target="contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="page-section active" role="region" aria-labelledby="home-heading">
+            <div class="home-hero">
+                <div class="hero-inner">
+                    <h1 id="home-heading">Hi — I'm Alayande Waheed</h1>
+                    <p class="hero-sub">Cyber security practitioner, writer, and curious tinkerer. I write about technology, programming, and life.</p>
+                    <p class="hero-cta"><a href="#blog" class="nav-link" data-target="blog">Read my posts</a> <span class="muted">or</span> <a href="#contact" class="nav-link" data-target="contact">Get in touch</a></p>
+                </div>
+            </div>
+
+            <div class="home-intro">
+                <h2>Welcome</h2>
+                <p>Thanks for stopping by. This space contains short essays, tutorials, and notes on security, software development, and projects I'm working on.</p>
+                <hr class="decorative">
+                <p class="lead">I’m available for freelance work and remote opportunities — feel free to reach out via the contact page.</p>
+            </div>
+
+            <div class="features">
+                <article class="feature">
+                    <h3>Latest Posts</h3>
+                    <p>Quick summaries and links to the newest articles and tutorials.</p>
+                </article>
+                <article class="feature">
+                    <h3>Projects</h3>
+                    <p>Tools and experiments I publish as open-source or demos.</p>
+                </article>
+                <article class="feature">
+                    <h3>Contact</h3>
+                    <p>Interested in working together? Let's talk.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="blog" class="page-section" role="region" aria-labelledby="blog-heading">
+            <div class="blog-container">
+                <h1 id="blog-heading">Blog</h1>
+
+                <div class="blog-controls">
+                    <label><input type="checkbox" id="last30" checked> Show last 30 days only</label>
+                    <a href="/admin.html" style="margin-left:1rem">Publish (admin)</a>
+                </div>
+
+                <div id="admin-controls" style="display:none; margin:1rem 0; padding:1rem; background:#f0f0f0; border-radius:4px">
+                    <label>Admin password: <input type="password" id="blog-admin-password" placeholder="Enter password to edit/delete"></label>
+                    <button id="admin-toggle">Enable editing</button>
+                </div>
+
+                <div id="posts-list" class="posts-list">
+                    <!-- posts loaded from server -->
+                    <p class="muted">Loading posts…</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="page-section" role="region" aria-labelledby="about-heading">
+            <div class="about-container">
+                <div class="about-header">
+                    <h1 id="about-heading">About</h1>
+                    <p class="about-sub">Short essays, security research, and practical engineering notes — focused on software, systems, and safe defaults.</p>
+                </div>
+
+                <div class="bio-grid">
+                    <aside class="bio-card" aria-label="Author bio">
+                        <div class="bio-details">
+                            <h2>Alayande Waheed Abefe</h2>
+                            <p class="role">Cyber Security student — Federal University of Technology, Akure</p>
+                            <p class="location">Based in Nigeria · Remote-friendly</p>
+                            <p class="bio">I study and practise security-minded software development. I publish concise guides, tutorials, and notes to help engineers make safer decisions when building services and deploying code.</p>
+                            <div class="contact-links">
+                                <a href="#contact" class="contact-link">Contact</a>
+                                <a href="/admin.html" class="contact-link">Admin</a>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <div class="about-more">
+                        <section class="skills">
+                            <h3>Focus areas</h3>
+                            <ul class="skills-list">
+                                <li>Application security & threat modelling</li>
+                                <li>Secure software design & code reviews</li>
+                                <li>Cloud tooling, automation & CI/CD</li>
+                                <li>Systems programming & observability</li>
+                            </ul>
+                        </section>
+
+                        <section class="projects">
+                            <h3>Recent topics</h3>
+                            <ul>
+                                <li>Practical threat modelling for small teams</li>
+                                <li>Hardening a Node.js web service</li>
+                                <li>Designing safer deployment pipelines</li>
+                            </ul>
+                        </section>
+
+                        <section class="writing">
+                            <h3>Why I write</h3>
+                            <p>I publish concise, actionable posts so engineers can quickly apply ideas. If you want deeper help or consulting, use the contact page to reach out.</p>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page-section" role="region" aria-labelledby="contact-heading">
+            <div class="contact-container">
+                <h1 id="contact-heading">Get in Touch</h1>
+                <p class="contact-intro">Choose your preferred way to reach out:</p>
+                
+                <div class="contact-methods">
+                    <button class="contact-method website" id="toggle-form">
+                        <div class="contact-icon">✍️</div>
+                        <div class="contact-details">
+                            <h2>Contact Form</h2>
+                            <p>Fill a form on this website</p>
+                            <p class="contact-desc">Send a message directly from here</p>
+                        </div>
+                        <div class="contact-arrow">→</div>
+                    </button>
+                    
+                    <a href="https://wa.me/2349132438339?text=Hi%20Waheed%2C%20I%20wanted%20to%20reach%20out..." target="_blank" rel="noopener noreferrer" class="contact-method whatsapp">
+                        <div class="contact-icon">💬</div>
+                        <div class="contact-details">
+                            <h2>WhatsApp</h2>
+                            <p>+2349132438339</p>
+                            <p class="contact-desc">Message me directly on WhatsApp</p>
+                        </div>
+                        <div class="contact-arrow">→</div>
+                    </a>
+                    
+                    <a href="mailto:waheedalayande63@gmail.com?subject=Let's%20Connect" class="contact-method email">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-details">
+                            <h2>Email</h2>
+                            <p>waheedalayande63@gmail.com</p>
+                            <p class="contact-desc">Send me an email directly</p>
+                        </div>
+                        <div class="contact-arrow">→</div>
+                    </a>
+                </div>
+                
+                <form id="contact-form" class="contact-form" style="display:none;">
+                    <button type="button" class="back-btn" id="back-to-methods">← Back</button>
+                    <h2>Send a Message</h2>
+                    <div class="form-group">
+                        <label for="contact-name">Your Name *</label>
+                        <input type="text" id="contact-name" name="name" required placeholder="John Doe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-email">Your Email *</label>
+                        <input type="email" id="contact-email" name="email" required placeholder="you@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-whatsapp">Your WhatsApp Number (optional)</label>
+                        <input type="tel" id="contact-whatsapp" name="whatsapp" placeholder="+234 913 243 8339">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-subject">Subject *</label>
+                        <input type="text" id="contact-subject" name="subject" required placeholder="What is this about?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-message">Message *</label>
+                        <textarea id="contact-message" name="message" required placeholder="Your message here..." rows="6"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Message</button>
+                    <div id="form-status" class="form-status"></div>
+                </form>
+                
+                <div class="contact-note">
+                    <p><strong>Note:</strong> Your information is kept private and secure. I typically respond within 24 hours.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function(){
+            const btn = document.querySelector('.nav-toggle');
+            const nav = document.querySelector('.nav-links');
+            const links = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.page-section');
+
+            function showSection(id){
+                sections.forEach(s => s.classList.toggle('active', s.id === id));
+                links.forEach(l => l.classList.toggle('active', l.dataset.target === id));
+            }
+
+            // Toggle mobile menu
+            btn.addEventListener('click', () => {
+                const isOpen = nav.classList.toggle('open');
+                btn.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            // Link clicks
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = link.dataset.target;
+                    if (!target) return;
+                    showSection(target);
+                    // update hash for back/refresh behavior
+                    history.replaceState(null, '', '#' + target);
+                    // close mobile menu if open
+                    if (nav.classList.contains('open')){
+                        nav.classList.remove('open');
+                        btn.setAttribute('aria-expanded','false');
+                    }
+                });
+            });
+
+            // Show section from hash on load
+            const hash = location.hash.replace('#','');
+            if (hash){
+                const valid = Array.from(sections).some(s => s.id === hash);
+                if (valid) showSection(hash);
+            }
+
+            // --- Blog API integration ---
+            const postsList = document.getElementById('posts-list');
+            const filterCheckbox = document.getElementById('last30');
+            const adminControls = document.getElementById('admin-controls');
+            const adminToggle = document.getElementById('admin-toggle');
+            const adminPasswordInput = document.getElementById('blog-admin-password');
+            let adminMode = false;
+            let currentPosts = [];
+
+            function escapeHtml(str){
+                return String(str).replace(/[&<>\"']/g, function(s){
+                    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s];
+                });
+            }
+
+            // Toggle admin mode
+            adminToggle.addEventListener('click', () => {
+                adminMode = !adminMode;
+                adminToggle.textContent = adminMode ? 'Disable editing' : 'Enable editing';
+                adminPasswordInput.style.opacity = adminMode ? '0.5' : '1';
+                adminPasswordInput.disabled = adminMode;
+                loadPosts(); // reload to show/hide edit/delete buttons
+            });
+
+            async function loadPosts(){
+                try{
+                    const res = await fetch('/api/posts');
+                    const posts = await res.json();
+                    currentPosts = posts;
+                    if (!posts.length) return postsList.innerHTML = '<p>No posts yet.</p>';
+                    const now = Date.now();
+                    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+                    const showLast30 = filterCheckbox ? filterCheckbox.checked : true;
+                    const visible = showLast30 ? posts.filter(p => (now - new Date(p.date).getTime()) <= THIRTY_DAYS) : posts;
+                    // sort by date desc
+                    visible.sort((a,b)=> new Date(b.date) - new Date(a.date));
+                    postsList.innerHTML = visible.map((p,i) => {
+                        const id = p.id || ('p'+i+Date.now());
+                        const adminButtons = adminMode ? `
+                            <button class="edit-btn" data-id="${id}" style="margin-left:0.5rem;background:#4CAF50;color:white;border:none;padding:0.25rem 0.5rem;border-radius:3px;cursor:pointer">Edit</button>
+                            <button class="delete-btn" data-id="${id}" style="margin-left:0.25rem;background:#f44336;color:white;border:none;padding:0.25rem 0.5rem;border-radius:3px;cursor:pointer">Delete</button>
+                        ` : '';
+                        return `
+<article class="post" id="post-${id}" data-id="${id}">
+    <header class="post-header">
+        <h3 class="post-title">${escapeHtml(p.title)}</h3>
+        <div class="post-meta"><small>${new Date(p.date).toLocaleString()}</small>${p.author?` <span class="author">· ${escapeHtml(p.author)}</span>`:''}</div>
+    </header>
+    <p class="excerpt">${escapeHtml(p.excerpt)}</p>
+    <div class="body">${escapeHtml(p.body).replace(/\n/g,'<br>')}</div>
+    <div class="post-actions">
+        <button class="read-more">Hide</button>
+        <a class="permalink" href="#post-${id}">Permalink</a>
+        ${adminButtons}
+    </div>
+</article>
+`;
+                    }).join('\n');
+
+                    // attach delegated click handler for read-more toggles
+                    postsList.querySelectorAll('.read-more').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const art = btn.closest('.post');
+                            const body = art.querySelector('.body');
+                            const open = body.style.display === 'none';
+                            body.style.display = open ? 'block' : 'none';
+                            btn.textContent = open ? 'Hide' : 'Show';
+                        });
+                    });
+
+                    // attach edit button handlers
+                    postsList.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const password = adminPasswordInput.value;
+                            if (!password) {
+                                alert('Please enter the admin password first');
+                                return;
+                            }
+                            const postId = btn.dataset.id;
+                            const post = currentPosts.find(p => String(p.id) === String(postId));
+                            if (!post) return;
+                            
+                            // Prompt for new content
+                            const title = prompt('Post title:', post.title);
+                            if (title === null) return;
+                            const excerpt = prompt('Post excerpt:', post.excerpt);
+                            if (excerpt === null) return;
+                            const body = prompt('Post body:', post.body);
+                            if (body === null) return;
+                            
+                            try {
+                                const res = await fetch('/api/posts/'+postId, {
+                                    method: 'PUT',
+                                    headers: {'Content-Type':'application/json'},
+                                    body: JSON.stringify({title, excerpt, body, password})
+                                });
+                                if (!res.ok) {
+                                    const err = await res.json().catch(()=>({}));
+                                    alert('Edit failed: ' + (err.error || res.status));
+                                    return;
+                                }
+                                alert('Post updated successfully');
+                                loadPosts();
+                            } catch(e) {
+                                alert('Network error: ' + e.message);
+                            }
+                        });
+                    });
+
+                    // attach delete button handlers
+                    postsList.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const password = adminPasswordInput.value;
+                            if (!password) {
+                                alert('Please enter the admin password first');
+                                return;
+                            }
+                            if (!confirm('Delete this post? This cannot be undone.')) return;
+                            
+                            const postId = btn.dataset.id;
+                            try {
+                                const res = await fetch('/api/posts/'+postId, {
+                                    method: 'DELETE',
+                                    headers: {'Content-Type':'application/json'},
+                                    body: JSON.stringify({password})
+                                });
+                                if (!res.ok) {
+                                    const err = await res.json().catch(()=>({}));
+                                    alert('Delete failed: ' + (err.error || res.status));
+                                    return;
+                                }
+                                alert('Post deleted successfully');
+                                loadPosts();
+                            } catch(e) {
+                                alert('Network error: ' + e.message);
+                            }
+                        });
+                    });
+                }catch(e){
+                    postsList.innerHTML = '<p class="muted">Could not load posts.</p>';
+                }
+            }
+
+            // reload when filter toggled
+            if (filterCheckbox) filterCheckbox.addEventListener('change', () => loadPosts());
+
+            // load posts once
+            loadPosts();
+
+            // --- Contact form handling ---
+            const contactForm = document.getElementById('contact-form');
+            const formStatus = document.getElementById('form-status');
+            const toggleFormBtn = document.getElementById('toggle-form');
+            const backToMethodsBtn = document.getElementById('back-to-methods');
+            const contactMethods = document.querySelector('.contact-methods');
+
+            // Toggle between contact methods and form
+            if (toggleFormBtn) {
+                toggleFormBtn.addEventListener('click', () => {
+                    contactMethods.style.display = 'none';
+                    contactForm.style.display = 'block';
+                    contactForm.scrollIntoView({behavior: 'smooth'});
+                });
+            }
+
+            if (backToMethodsBtn) {
+                backToMethodsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    contactForm.style.display = 'none';
+                    contactMethods.style.display = 'flex';
+                    contactForm.reset();
+                    formStatus.textContent = '';
+                    formStatus.className = 'form-status';
+                });
+            }
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('contact-name').value;
+                    const email = document.getElementById('contact-email').value;
+                    const whatsapp = document.getElementById('contact-whatsapp').value;
+                    const subject = document.getElementById('contact-subject').value;
+                    const message = document.getElementById('contact-message').value;
+                    
+                    formStatus.className = 'form-status sending';
+                    formStatus.textContent = 'Sending...';
+                    
+                    try {
+                        const res = await fetch('/api/contact', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({name, email, whatsapp, subject, message})
+                        });
+                        
+                        if (res.ok) {
+                            formStatus.className = 'form-status success';
+                            formStatus.textContent = '✓ Message sent successfully! I\'ll get back to you soon.';
+                            contactForm.reset();
+                            setTimeout(() => {
+                                formStatus.textContent = '';
+                                formStatus.className = 'form-status';
+                            }, 5000);
+                        } else {
+                            formStatus.className = 'form-status error';
+                            formStatus.textContent = '✗ Error sending message. Please try again.';
+                        }
+                    } catch (err) {
+                        formStatus.className = 'form-status error';
+                        formStatus.textContent = '✗ Network error. Please check your connection.';
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

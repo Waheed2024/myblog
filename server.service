@@ -1,0 +1,19 @@
+[Unit]
+Description=MyBlog Node Server
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/home/mover/myblog
+# Use EnvironmentFile or set Environment in systemd drop-in to provide PUBLISH_PASSWORD
+# Environment=PUBLISH_PASSWORD=your-password
+ExecStart=/usr/bin/env node /home/mover/myblog/server.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=myblog-server
+
+[Install]
+WantedBy=multi-user.target

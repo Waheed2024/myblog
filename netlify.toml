@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "./"
 
+# serve blog.html as the homepage
+[[redirects]]
+  from = "/"
+  to = "/blog.html"
+  status = 200
+
 # redirect API calls to Netlify Functions
 [[redirects]]
   from = "/api/*"

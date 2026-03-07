@@ -79,3 +79,38 @@ Admin logs and archive
 
 Security note
 - This setup is intentionally small and uses a single shared secret (password or token). For production, consider stronger user management and HTTPS.
+
+
+## Deploying on Netlify
+
+The server code can no longer run on Netlify itself; instead the front end is
+served as static files and the API lives in Netlify Functions.  A basic
+conversion is included in this repo:
+
+* `netlify/functions/posts.js` implements the `/api/posts` endpoints using the
+  same logic as `server.js`.
+* A `netlify.toml` file redirects `/api/*` requests to the functions and
+  provides a trivial build command.
+
+Because Netlify Functions are stateless they can’t write back to `posts.json`
+locally; the helper in `netlify/functions/_github.js` uses the GitHub REST API
+to read and update that file in your repository.  To make it work you must set
+these environment variables in the Netlify dashboard (or your local
+`netlify.toml` under `[build.environment]`):
+
+```sh
+GITHUB_REPO="<owner>/<repo>"    # e.g. "Waheed2024/myblog"
+GITHUB_TOKEN="<personal-access-token>"  # needs repo:contents permission
+PUBLISH_PASSWORD="<your-secret>"        # same as before
+ADMIN_TOKEN="<optional-bearer-token>"
+```
+
+During development you can use `netlify dev` (install the Netlify CLI) and
+the functions will run locally with the same environment variables.
+
+If you prefer not to use GitHub as storage, replace the helper with some
+other database or an external API; the front-end still talks to `/api/posts`
+via the redirect.
+
+Finally, when you connect the repository to Netlify the site will build and
+publish the static files automatically.

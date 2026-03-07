@@ -1,6 +1,22 @@
 .nav-reset *{box-sizing: border-box}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary:#0b63d6;
+    --primary-dark:#0953ab;
+    --secondary:#16a34a;
+    --accent:#f97316;
+    --bg:#f5f7fa;
+    --text:#071629;
+    --muted:rgba(0,0,0,0.6);
+    --font-sans:'Inter','Roboto','Arial',sans-serif;
+}
+
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.6;}
+
 /* Navbar base */
-header{background:#0b63d6;color:#fff;font-family:Arial,Helvetica,sans-serif;position:sticky;top:0;z-index:1000}
+header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-family:var(--font-sans);position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
 .navbar{
     max-width:1100px;
     margin:0 auto;
@@ -12,7 +28,7 @@ header{background:#0b63d6;color:#fff;font-family:Arial,Helvetica,sans-serif;posi
 }
 .brand-link{color:#fff;text-decoration:none;font-weight:700;font-size:1.25rem}
 .nav-links{display:flex;gap:1rem;align-items:center}
-.nav-link{color:#fff;text-decoration:none;padding:0.5rem 0.75rem;border-radius:6px;transition:background .15s}
+.nav-link{color:#fff;text-decoration:none;padding:0.5rem 0.75rem;border-radius:6px;transition:background .15s,transform .15s;}
 .nav-link:hover,.nav-link:focus{background:rgba(255,255,255,0.12);outline:none}
 .nav-toggle{display:none;background:transparent;border:0;color:#fff;font-size:1.5rem;cursor:pointer}
 
@@ -66,13 +82,13 @@ main{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
 .hero-sub{color:rgba(0,0,0,0.72);margin:0 0 1rem}
 .hero-cta{margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap}
 .hero-cta .nav-link{
-    background:linear-gradient(135deg, #0b63d6, #0953ab);
+    background:linear-gradient(135deg, var(--primary), var(--primary-dark));
     color:#fff;
     padding:0.75rem 1.5rem;
     border-radius:8px;
     font-weight:600;
     font-size:1rem;
-    border:2px solid #0b63d6;
+    border:2px solid var(--primary);
     transition:all 0.3s ease;
     box-shadow:0 4px 15px rgba(11,99,214,0.3);
     cursor:pointer;
@@ -80,7 +96,7 @@ main{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
     display:inline-block;
 }
 .hero-cta .nav-link:hover{
-    background:linear-gradient(135deg, #0953ab, #073a8a);
+    background:linear-gradient(135deg, var(--primary-dark), #073a8a);
     border-color:#073a8a;
     transform:translateY(-3px);
     box-shadow:0 8px 25px rgba(11,99,214,0.5);
@@ -115,6 +131,10 @@ main{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
     margin:0 auto;
     padding:0 1rem;
 }
+
+.post{background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin-bottom:1.5rem;transition:transform 0.2s;}
+.post:hover{transform:translateY(-3px);}
+
 
 /* Blog controls */
 .blog-controls{
@@ -154,7 +174,7 @@ main{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
 }
 
 .blog-controls a:hover {
-    background:#0953ab;
+    background:var(--primary-dark);
     transform:translateY(-2px);
     box-shadow:0 4px 12px rgba(11,99,214,0.3);
 }

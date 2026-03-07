@@ -2,6 +2,9 @@
   command = "npm run build"
   publish = "./"
 
+  [build.environment]
+    NODE_VERSION = "18"
+
 # serve blog.html as the homepage
 [[redirects]]
   from = "/"

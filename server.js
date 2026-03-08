@@ -307,6 +307,4 @@ app.get('/', (req, res) => {
 // Serve static files last so API routes are checked first
 app.use(express.static(path.join(__dirname)));
 
-// Force redeploy trigger
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT} - Version 2`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
